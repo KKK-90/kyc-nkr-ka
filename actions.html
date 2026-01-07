@@ -1,1 +1,72 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KYC | Action Items</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body class="page" data-page="actions">
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <div class="brand__title">NORTH KARNATAKA REGION</div>
+        <div class="brand__subtitle">Action Items</div>
+      </div>
+
+      <div class="nav">
+        <a href="upload.html">Upload</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a class="active" href="actions.html">Action Items</a>
+        <a href="data.html">Data</a>
+        <span class="chip" id="dataChip">No data loaded</span>
+        <button class="btn btn--ghost btn--small" id="themeToggle">Light/Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div class="panel__title">
+        <span>Action Items Table</span>
+        <span class="muted" id="actionsSummary">—</span>
+      </div>
+
+      <div class="table-tools">
+        <input class="search" id="actionsSearch" placeholder="Search action items..." />
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn--ghost" id="btnDownloadActionsCsv">Download Actions CSV</button>
+        </div>
+      </div>
+
+      <!-- TOP scrollbar -->
+      <div class="scrollbar-top" id="actionsTopScroll"><div class="scrollbar-inner" id="actionsTopInner"></div></div>
+
+      <div class="table-wrap" id="actionsWrap">
+        <table id="actionsTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__title">How Action Items are formed</div>
+      <div class="muted" style="margin-top:10px; line-height:1.6;">
+        Rows appear here if any of these are present: Pending Scan/Upload, Missing Consignment, Omissions/Rejections, Missing CIF, Missing Account Name.
+      </div>
+    </section>
+
+    <div class="alert hidden" id="alertBox"></div>
+  </main>
+
+  <footer class="footer">
+    <span class="line">© North Karnataka Region — KYC Tool</span>
+    <span class="line">Action items are derived from uploaded dataset</span>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
 
