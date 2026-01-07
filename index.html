@@ -1,1 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NKR-KA | KYC Dashboard</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+
+  <!-- OSS CDNs (static-site friendly) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__title">NORTH KARNATAKA REGION</div>
+      <div class="brand__subtitle">KYC Monitoring Tool (GitHub Pages)</div>
+    </div>
+
+    <div class="topbar__right">
+      <div class="chip" id="dataChip">No data loaded</div>
+      <button class="btn btn--ghost" id="btnReset">Reset</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div class="panel__title">
+        <span>Upload KYC Template</span>
+        <span class="muted">(.xlsx / .xls)</span>
+      </div>
+
+      <div class="uploader">
+        <input type="file" id="fileInput" accept=".xlsx,.xls" />
+        <div class="uploader__help">
+          Expected template headers are validated automatically. No data is uploaded anywhere — processing happens in your browser.
+        </div>
+      </div>
+
+      <div class="alert hidden" id="alertBox"></div>
+    </section>
+
+    <section class="panel hidden" id="filtersPanel">
+      <div class="panel__title">Filters</div>
+
+      <div class="filters">
+        <div class="field">
+          <label>View</label>
+          <select id="viewMode">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="review" selected>Review</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Date Basis</label>
+          <select id="dateBasis">
+            <option value="Date of submission to CPC" selected>Date of submission to CPC</option>
+            <option value="acct_opn_date">Account Open Date (acct_opn_date)</option>
+            <option value="last_any_tran_date">Last Any Tran Date (last_any_tran_date)</option>
+          </select>
+          <div class="hint">Daily/Weekly/Monthly are best with “Date of submission to CPC”.</div>
+        </div>
+
+        <div class="field">
+          <label>From</label>
+          <input type="date" id="fromDate" />
+        </div>
+
+        <div class="field">
+          <label>To</label>
+          <input type="date" id="toDate" />
+        </div>
+
+        <div class="field">
+          <label>Division</label>
+          <select id="divisionFilter">
+            <option value="">All</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Office</label>
+          <select id="officeFilter">
+            <option value="">All</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Status</label>
+          <select id="statusFilter">
+            <option value="">All</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Scan/Upload status</label>
+          <select id="scanFilter">
+            <option value="">All</option>
+          </select>
+        </div>
+
+        <div class="field field--actions">
+          <label>&nbsp;</label>
+          <button class="btn" id="btnApply">Apply</button>
+          <button class="btn btn--ghost" id="btnDownloadCsv">Download CSV</button>
+          <button class="btn btn--ghost" id="btnPrintReview">Print Review</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="dashPanel">
+      <div class="tabs">
+        <button class="tab" data-tab="kpis">KPIs</button>
+        <button class="tab" data-tab="charts">Charts</button>
+        <button class="tab" data-tab="actions">Action Items</button>
+        <button class="tab" data-tab="data">Data</button>
+      </div>
+
+      <div class="tabpane" id="tab-kpis">
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <div class="split">
+          <div class="card">
+            <div class="card__title">Ageing Buckets (Pending Scan)</div>
+            <div class="card__body" id="ageingBox"></div>
+          </div>
+
+          <div class="card">
+            <div class="card__title">Data Quality (Missing/Invalid)</div>
+            <div class="card__body" id="qualityBox"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpane hidden" id="tab-charts">
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Submissions Trend (by selected date basis)</div>
+            <canvas id="trendChart"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Division Performance (Pending Scan %)</div>
+            <canvas id="divisionChart"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Scan/Upload Status Mix</div>
+            <canvas id="scanChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpane hidden" id="tab-actions">
+        <div class="table-tools">
+          <div class="muted" id="actionsSummary"></div>
+          <input class="search" id="actionsSearch" placeholder="Search action items..." />
+        </div>
+        <div class="table-wrap">
+          <table id="actionsTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tabpane hidden" id="tab-data">
+        <div class="table-tools">
+          <div class="muted" id="dataSummary"></div>
+          <input class="search" id="dataSearch" placeholder="Search data..." />
+        </div>
+        <div class="table-wrap">
+          <table id="dataTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>© North Karnataka Region — KYC Tool</div>
+      <div class="muted">Static, browser-only processing • No server upload</div>
+    </footer>
+  </main>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
 
